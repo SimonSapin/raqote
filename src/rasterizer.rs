@@ -154,6 +154,10 @@ pub struct Rasterizer {
     width: i32,
     height: i32,
     cur_y: i32,
+    pub bounds_top: i32,
+    pub bounds_bottom: i32,
+    pub bounds_left: i32,
+    pub bounds_right: i32,
     active_edges: Option<NonNull<ActiveEdge>>,
 
     edge_arena: Arena<ActiveEdge>,
@@ -168,6 +172,10 @@ impl Rasterizer {
         Rasterizer {
             width: width * 4,
             height: height * 4,
+            bounds_right: 0,
+            bounds_left: width,
+            bounds_top: height,
+            bounds_bottom: 0,
             cur_y: 0,
             edge_starts,
             edge_arena: Arena::new(),
@@ -280,6 +288,33 @@ impl Rasterizer {
         // drop horizontal edges
         if cury >= e.y2 {
             return;
+        }
+
+        if (edge.y1 + 3) >> 2 < self.bounds_top {
+            self.bounds_top = (edge.y1 + 3) >> 2;
+        }
+        if (edge.y2 + 3) >> 2 > self.bounds_bottom {
+            self.bounds_bottom = (edge.y2 + 3) >> 2;
+        }
+        if (edge.x1 + 3) >> 2 < self.bounds_left {
+            self.bounds_left = (edge.x1 + 3) >> 2;
+        }
+        if (edge.x1 + 3) >> 2 > self.bounds_right {
+            self.bounds_right = (edge.x1 + 3) >> 2;
+        }
+        if (edge.x2 + 3) >> 2 < self.bounds_left {
+            self.bounds_left = (edge.x2 + 3) >> 2;
+        }
+        if (edge.x2 + 3) >> 2 > self.bounds_right {
+            self.bounds_right = (edge.x2 + 3) >> 2;
+        }
+        if curve {
+            if (edge.control_x + 3) >> 2 < self.bounds_left {
+                self.bounds_left = (edge.control_x + 3) >> 2;
+            }
+            if (edge.control_x + 3) >> 2 > self.bounds_right {
+                self.bounds_right = (edge.control_x + 3) >> 2;
+            }
         }
 
         if curve {
@@ -559,5 +594,9 @@ impl Rasterizer {
             *e = None;
         }
         self.edge_arena = Arena::new();
+        self.bounds_bottom = 0;
+        self.bounds_right = 0;
+        self.bounds_top = self.height/4;
+        self.bounds_left = self.width/4;
     }
 }

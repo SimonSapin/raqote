@@ -459,7 +459,11 @@ impl DrawTarget {
         self.apply_path(path);
         let mut blitter = MaskSuperBlitter::new(self.width, self.height);
         self.rasterizer.rasterize(&mut blitter, path.winding);
-        self.composite(src, &blitter.buf, intrect(0, 0, self.width, self.height),
+        self.composite(src, &blitter.buf,
+                       intrect(self.rasterizer.bounds_left,
+                               self.rasterizer.bounds_top,
+                               self.rasterizer.bounds_right,
+                               self.rasterizer.bounds_bottom),
                        options.blend_mode, options.alpha);
         self.rasterizer.reset();
     }
