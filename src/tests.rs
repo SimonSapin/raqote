@@ -237,9 +237,6 @@ mod tests {
         assert_eq!(dt.get_data(), &vec![white, 0, white, 0][..])
     }
 
-    // This test is disable on miri because miri doesn't support hypot()
-    // https://github.com/rust-lang/miri/issues/667
-    #[cfg(not(miri))]
     #[test]
     fn stroke() {
         let mut dt = DrawTarget::new(3, 3);
@@ -266,7 +263,6 @@ mod tests {
         )
     }
 
-    #[cfg(not(miri))]
     #[test]
     fn degenerate_stroke() {
         let mut dt = DrawTarget::new(3, 3);
@@ -291,7 +287,6 @@ mod tests {
         );
     }
 
-    #[cfg(not(miri))]
     #[test]
     fn degenerate_stroke2() {
         let mut dt = DrawTarget::new(3, 3);
@@ -315,7 +310,6 @@ mod tests {
         );
     }
 
-    #[cfg(not(miri))]
     #[test]
     fn dashing() {
         let mut dt = DrawTarget::new(3, 3);
@@ -343,7 +337,6 @@ mod tests {
         );
     }
 
-    #[cfg(not(miri))]
     #[test]
     fn dash_rect() {
         let mut dt = DrawTarget::new(3, 3);
